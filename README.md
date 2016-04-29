@@ -25,10 +25,8 @@ MONGO_URL=mongodb://db:27017/mern
 PORT=8000
 ```
 
-And it's done!
-
 **Stack Graph**
 
-After you finish these steps, it should perfectly running on your server, and it's the stack graph.
+After you finish these steps, it should perfectly running on your server.
 
 ![](http://i.imgur.com/rrVSVag.png)
