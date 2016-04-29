@@ -1,113 +1,34 @@
-![](http://res.cloudinary.com/hashnode/image/upload/w_200/v1455647564/static_imgs/mern/imgs/favicon-mern.png)
+# Docker MERN Starter Blog
 
-# mern-starter
-![title](https://travis-ci.org/Hashnode/mern-starter.svg?branch=master)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+This repo is forked from [Hashnode/mern-starter](https://github.com/Hashnode/mern-starter), it can build with docker in rancher.
 
+![](http://i.giphy.com/3o6ozl0scfmBuRRP0c.gif)
 
-MERN is a scaffolding tool which makes it easy to build isomorphic apps using Mongo, Express, React and NodeJS. It minimizes the setup time and gets you up to speed using proven technologies.
+# How To Build
 
-- [Website](http://mern.io)
-- [Documentation](http://mern.io/documentation.html)
-- [Discussions](https://hashnode.com/n/mern)
+**Add Service**
 
-## Quickstart
+Add one service named db and select `mongo:3` image, then add another service named mern and select `tonypai/docker-mern` image.
+
+**Port Map & Service Link**
+
+Create a service link to db service, then add a port map like this...
+
+![](http://i.imgur.com/pGJoOPP.png)
+
+**ENV Setting**
+
+Mern service needs to link mongodb or it will crash, so you can change the mongo url and web server port by setting environment variables.
 
 ```
-  npm install -g mern-cli
-  mern your_new_app
-  cd your_new_app
-  npm install
-  npm start
+MONGO_URL=mongodb://db:27017/mern
+PORT=8000
 ```
 
-**Note : Please make sure your MongoDB is running.** For MongoDB installation guide see [this](https://docs.mongodb.org/v3.0/installation/).
+And it's done!
 
-## File Structure
+**Stack Graph**
 
-### Webpack Configs
+After you finish these steps, it should perfectly running on your server, and it's the stack graph.
 
-MERN uses Webpack for bundling modules. There are two types of Webpack configs provided `webpack.config.dev.js` (for development) and `webpack.config.prod.js` (for production).
-
-The Webpack configuration is minimal and beginner-friendly. You can customize and add more features to it for production build.
-
-### Server
-
-MERN uses express web framework. Our app sits in server.js where we check for NODE_ENV.
-
-If NODE_ENV is development we apply Webpack middlewares for bundling and Hot Module Replacement.
-
-#### Server Side Rendering
-
-We use React Router's match function for handling all page requests so that browser history works.
-
-All the routes are defined in `shared/routes.js`. React Router renders components according to route requested.
-
-```js
-// Server Side Rendering based on routes matched by React-router.
-app.use((req, res) => {
-    match({
-        routes,
-        location: req.url
-    }, (err, redirectLocation, renderProps) => {
-        if (err) {
-            return res.status(500).end('Internal server error');
-        }
-
-        if (!renderProps) {
-            return res.status(404).end('Not found!');
-        }
-
-        const initialState = {
-            posts: [],
-            post: {}
-        };
-
-        const store = configureStore(initialState);
-
-        fetchComponentData(store.dispatch, renderProps.components, renderProps.params).then(() => {
-            const initialView = renderToString(
-                <Provider store = {store} >
-                  <RouterContext {...renderProps}/>
-                </Provider>
-            );
-
-            const finalState = store.getState();
-
-            res.status(200).end(renderFullPage(initialView, finalState));
-        }).catch(() => {
-            res.end(renderFullPage('Error', {}));
-        });
-    });
-});
-```
-
-`match` takes two parameters, first is an object that contains routes, location and history and second is a callback function which is called when routes have been matched to a location.
-
-If there's an error in matching we return 500 status code, if no matches are found we return 404 status code. If a match is found then we need to create a new Redux Store instance.
-
-**Note:** A new Redux Store is populated afresh on every request.
-
-`fetchComponentData` is the key function. It takes three params : first is a dispatch function of Redux store, second is an array of components that should be rendered in current route and third is the route params. `fetchComponentData` collects all the needs (need is an array of actions that are required to be dispatched before rendering the component) of components in the current route. It returns a promise when all the required actions are dispatched. We render the page and send data to client for client-side rendering in `window.__INITIAL_STATE__`.
-
-### Shared
-
-Shared directory contains all the components, routes, actions and reducers.
-
-### Client
-
-Index.js simply does client side rendering using the data provided from `window.__INITIAL_STATE__`.
-
-## Roadmap
-####MERN Starter
-- [ ] Add GraphQL to mern-starter
-- [ ] Add SCSS support
-- [ ] Improve file structure (needs discussion)
-
-####[MERN CLI](https://github.com/Hashnode/mern-cli)
-- [ ] Generators for Containers, Components, Routes, Reducers, Actions
-- [ ] Generators for Models, Router, Controllers
-- [ ] Add flags to CLI e.g. for adding lifecycle
-
-## License
-MERN is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+![](http://i.imgur.com/rrVSVag.png)
